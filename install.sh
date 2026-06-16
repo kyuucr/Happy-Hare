@@ -2066,6 +2066,7 @@ questionaire() {
             _param_gate_parking_distance=25
             _param_gear_homing_speed=80
             _param_selector_gate_angles="60,0,180,120"
+            _param_selector_release_angles="0,60,120,60"
             ;;
 
         "$VVD")

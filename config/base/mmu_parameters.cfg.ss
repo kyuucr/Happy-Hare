@@ -46,8 +46,8 @@ gear_max_accel: 1500			# Never to be exceeded gear acceleration regardless of sp
 # ╚══════╝╚══════╝╚═╝  ╚═╝  ╚═══╝   ╚═════╝ 
 #
 # Selector servo positions are stored in `mmu_vars.cfg` after calibration.
-# Note that the "release angle" is by default the nearest position between calibrated selection angles. This can be overriden
-# by setting and explicit servo_release_angle
+# Note that the "release angles" is by default the nearest position between calibrated selection angles. This can be overriden
+# by setting and explicit selector_release_angles
 #
 # Note that leaving the servo active when down can stress the electronics and is not recommended unless you have a good
 # 5v power supply. Make sure your hardware is suitable for the job!
@@ -57,7 +57,11 @@ servo_dwell: 0.8			# Minimum time given to servo to complete movement prior to n
 servo_always_active: 0			# CAUTION: 1=Force servo to always stay active, 0=Release after movement
 selector_gate_angles: 45, 90, 135, 180	# Optionally set default list of gate angles (overriden by calibration)
 selector_bypass_angle: -1		# Optionally set default servo angle when bypass is selected, -1=No default
-selector_release_angle: -1		# Optionally force a specific "release" angle, -1=Default (between gate angles) behavior
+
+# Optionally force a specific "release" angles, empty=Default (between gate angles) behavior. Set a list of angles corresponding
+# the number of selector_gate_angles, e.g., for selector_gate_angles of 45, 90, 135, 180, one may set selector_release_angles
+# to 72.5, 117.5, 162.5, 162.5
+selector_release_angles:		
 
 
 # Logging --------------------------------------------------------------------------------------------------------------

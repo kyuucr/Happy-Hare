@@ -1681,7 +1681,7 @@ class ServoSelector(BaseSelector, object):
         self.servo_min_angle = mmu.config.getfloat('servo_min_angle', 0, above=0)                    # Not exposed
         self.servo_max_angle = mmu.config.getfloat('servo_max_angle', self.servo.max_angle, above=0) # Not exposed
         self.servo_angle = self.servo_min_angle + (self.servo_max_angle - self.servo_min_angle) / 2
-        self.selector_release_angle = mmu.config.getfloat('selector_release_angle', -1, minval=-1, maxval=self.servo_max_angle)
+        self.selector_release_angles = list(mmu.config.getintlist('selector_release_angles', []))
         self.selector_bypass_angle = mmu.config.getfloat('selector_bypass_angle', -1, minval=-1, maxval=self.servo_max_angle)
         self.selector_angles = list(mmu.config.getintlist('selector_gate_angles', []))
 
@@ -1767,7 +1767,7 @@ class ServoSelector(BaseSelector, object):
             self.servo_state = self.mmu.FILAMENT_UNKNOWN_STATE
         elif gate >= 0:
             if release:
-                release_angle = self._get_closest_released_angle()
+                release_angle = self._get_release_angle(gate)
                 self.mmu.log_trace("Setting servo to filament released position at angle: %.1f" % release_angle)
                 self._set_servo_angle(release_angle)
                 self.servo_state = self.mmu.FILAMENT_RELEASE_STATE
@@ -1851,8 +1851,8 @@ class ServoSelector(BaseSelector, object):
             if not self.mmu.calibration_status & self.mmu.CALIBRATED_SELECTOR:
                 msg += "Calibration not complete\n"
             msg += "Current selector gate angle positions are: %s degrees" % self.selector_angles
-            if self.selector_release_angle >= 0:
-                msg += "\nRelease angle is fixed at: %s degrees" % self.selector_release_angle
+            if len(self.selector_release_angles) > 0:
+                msg += "\nRelease angle is fixed at: %s degrees" % self.selector_release_angles
             else:
                 msg += "\nRelease angles configured to be between each gate angle"
             if self.has_bypass():
@@ -1918,9 +1918,9 @@ class ServoSelector(BaseSelector, object):
             self.servo_angle = angle
             self.mmu.movequeues_dwell(max(self.servo_dwell, self.servo_duration, 0))
 
-    def _get_closest_released_angle(self):
-        if self.selector_release_angle >= 0:
-            return self.selector_release_angle
+    def _get_release_angle(self, gate):
+        if len(self.selector_release_angles) > 0:
+            return self.selector_release_angles[gate]
         neutral_angles = [(self.selector_angles[i] + self.selector_angles[i + 1]) / 2 for i in range(len(self.selector_angles) - 1)]
         closest_angle = 0
         min_difference = float('inf')
